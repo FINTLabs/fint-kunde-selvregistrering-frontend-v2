@@ -9,6 +9,7 @@ export function PageFooter() {
                 padding: '2rem 10rem',
                 marginTop: '2rem',
                 background: '#6B133D',
+
             }}>
             <Heading level="2" size="medium" spacing>
                 <img src="public/NovariLogo.png" width={100} alt="Novari Logo" />

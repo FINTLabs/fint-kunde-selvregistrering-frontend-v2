@@ -1,9 +1,9 @@
 import type { MetaFunction } from "@remix-run/node";
-import {Box, Button, HStack, Page, TextField, VStack} from "@navikt/ds-react";
-import {Form} from "@remix-run/react";
+import {Box, Page } from "@navikt/ds-react";
 import {PageHeader} from "~/components/PageHeader";
 import {PageFooter} from "~/components/PageFooter";
-import {PersonvernModal} from "~/components/PersonvernModal";
+import "~/components/RegistrationForm";
+import RegistrationForm from "~/components/RegistrationForm";
 
 export const meta: MetaFunction = () => {
   return [
@@ -14,32 +14,21 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   return (
-      <Page className="h-full">
+      <Page className=""
+        footer={
+        <Page.Block as="footer">
+          <PageFooter/>
+        </Page.Block>
+        }
+      >
         <Box as="header">
           <Page.Block className="bg-[#F8ECDC]">
             <PageHeader/>
           </Page.Block>
         </Box>
         <Box as="main">
-          <Form method="post">
-            <Page.Block gutters width="md">
-              <VStack gap="4" padding="20">
-                <TextField type="number" name="nin" label="Fødselsnummer" />
-                <TextField type="text" name="firstName" label="Fornavn" />
-                <TextField type="text" name="lastName" label="Etternavn" />
-                <TextField type="email" name="mail" label="E-post" />
-                <TextField type="tel" name="mobile" label="Mobil" />
-                  <HStack justify="end" >
-                    <Button type="submit">Opprett bruker</Button>
-                  </HStack>
-                <PersonvernModal/>
-              </VStack>
-            </Page.Block>
-          </Form>
+            <RegistrationForm/>
         </Box>
-        <Page.Block as="footer">
-          <PageFooter/>
-        </Page.Block>
       </Page>
   );
 }
