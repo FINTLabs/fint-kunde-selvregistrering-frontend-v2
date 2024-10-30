@@ -64,7 +64,7 @@ export default function RegistrationForm() {
     });
     const [clientError, setClientError] = useState<string | null>(null);
     const [submitButtonType, setSubmitButtonType] = useState<"button" | "submit">("button");
-
+    const [firstNameError, setFirstNameError] = useState<string | undefined>();
     // Validation function
     const validateForm = () => {
         const { nin, firstName, lastName, mail, mobile } = formValues;
@@ -74,7 +74,6 @@ export default function RegistrationForm() {
         if (!lastName) return false;
         if (!mail) return false;
         return !(!mobile || mobile.length < 8);
-
 
     };
 
@@ -89,21 +88,29 @@ export default function RegistrationForm() {
         }
     }, [formValues]);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-        if (submitButtonType === "submit") {
-            console.log("Form data:", formValues);
-            e.currentTarget.submit(); // Proceed to Remix form handling
-        }
-    };
+    const handleSubmit = ()=> {
+        console.log("Hello World");
+        if (formValues.firstName && formValues.firstName?.length < 3) {
+
+            setFirstNameError('Formal er påkrevd');
+            }
+        };
+
+    const handleSubmitButton = () => {
+        console.log("Hello World");
+    }
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormValues({ ...formValues, [name]: value });
     };
 
+
+
+
+
     return (
-        <Form method="post" onSubmit={handleSubmit}>
+        // <Form method="post">
             <Page.Block gutters width="md">
                 <VStack gap="4" padding="20">
                     <TextField
@@ -112,6 +119,7 @@ export default function RegistrationForm() {
                         label="Fødselsnummer"
                         value={formValues.nin}
                         onChange={handleChange}
+
                     />
                     {actionData?.fieldErrors?.nin && <p>{actionData.fieldErrors.nin}</p>}
 
@@ -121,6 +129,7 @@ export default function RegistrationForm() {
                         label="Fornavn"
                         value={formValues.firstName}
                         onChange={handleChange}
+                        error={firstNameError}
                     />
                     {actionData?.fieldErrors?.firstName && <p>{actionData.fieldErrors.firstName}</p>}
 
@@ -155,11 +164,11 @@ export default function RegistrationForm() {
                     {clientError && <p style={{ color: "red" }}>{clientError}</p>}
 
                     <HStack justify="end">
-                        <Button type={submitButtonType}>Opprett bruker</Button>
+                        <Button onClick={handleSubmitButton}>Opprett bruker</Button>
                     </HStack>
                     <PersonvernModal />
                 </VStack>
             </Page.Block>
-        </Form>
+        // </Form>
     );
 }
