@@ -71,7 +71,6 @@ export default function RegistrationForm() {
   const [submitButtonType, setSubmitButtonType] = useState<"button" | "submit">(
     "button"
   );
-  const [firstNameError, setFirstNameError] = useState<string | undefined>();
   // Validation function
   const validateForm = () => {
     const { nin, firstName, lastName, mail, mobile } = formValues;
@@ -83,31 +82,29 @@ export default function RegistrationForm() {
     return !(!mobile || mobile.length < 8);
   };
 
-  // Update submit button type based on validation
+  let isValid = false;
+
   useEffect(() => {
     if (validateForm()) {
-      setClientError(null); // Clear any error messages
+      setClientError(null);
       setSubmitButtonType("submit");
+      //   console.log(formValues);
+      let isValid = true;
     } else {
-      setClientError("Please ensure all fields are filled out correctly."); // Set error message if validation fails
-      setSubmitButtonType("button");
+      setClientError("Alle feltene må fylles ut riktig.");
     }
   }, [formValues]);
-
-  const handleSubmit = () => {
-    console.log("Hello World");
-    if (formValues.firstName && formValues.firstName?.length < 3) {
-      setFirstNameError("Formal er påkrevd");
-    }
-  };
-
-  const handleSubmitButton = () => {
-    console.log("Hello World");
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
+  };
+
+  const submitForm = () => {
+    if (isValid == true) {
+      console.log(formValues);
+    } else {
+    }
   };
 
   return (
@@ -129,7 +126,6 @@ export default function RegistrationForm() {
           label="Fornavn"
           value={formValues.firstName}
           onChange={handleChange}
-          error={firstNameError}
         />
         {actionData?.fieldErrors?.firstName && (
           <p>{actionData.fieldErrors.firstName}</p>
@@ -170,7 +166,7 @@ export default function RegistrationForm() {
         {clientError && <p style={{ color: "red" }}>{clientError}</p>}
 
         <HStack justify="end">
-          <Button onClick={handleSubmitButton}>Opprett bruker</Button>
+          <Button onClick={submitForm}>Opprett bruker</Button>
         </HStack>
         <PersonvernModal />
       </VStack>
