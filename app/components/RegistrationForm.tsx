@@ -42,7 +42,7 @@ export default function RegistrationForm() {
     });
 
     const handleSubmit = ()=> {
-        console.log("Hello World", formValues.nin);
+        console.log("Hello World");
 
         const newErrors: Errors = {};
 
@@ -65,6 +65,7 @@ export default function RegistrationForm() {
 
             else {
                 console.log(formValues)
+                // This is where the api post will go
             }
             setErrors(newErrors);
         };
