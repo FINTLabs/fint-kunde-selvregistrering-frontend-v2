@@ -57,6 +57,8 @@ export default function RegistrationForm() {
             }
             if (!formValues.mail) {
                 newErrors.mail = "E-post adresse er påkrevd.";
+            } else if (!formValues.mail.includes("@")) {
+                newErrors.mail = "E-post adressen må inneholde ein @";
             }
             if (!formValues.mobile) {
                 newErrors.mobile = "telefonnummer er påkrevd.";
