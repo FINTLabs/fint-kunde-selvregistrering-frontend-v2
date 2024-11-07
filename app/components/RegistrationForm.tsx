@@ -1,7 +1,15 @@
-import { useActionData } from "@remix-run/react";
+import { Link, useActionData } from "@remix-run/react";
 import { useState } from "react";
-import { Button, HStack, VStack, TextField, Page } from "@navikt/ds-react";
+import {
+  Button,
+  HStack,
+  VStack,
+  TextField,
+  Page,
+  Alert,
+} from "@navikt/ds-react";
 import { PersonvernModal } from "~/components/PersonvernModal";
+import InfoBox from "~/components/InfoBox";
 
 type ActionData = {
   formError?: string;
@@ -27,11 +35,19 @@ type Errors = {
   lastName?: string;
   mail?: string;
   mobile?: string;
+  alreadyExists?: boolean;
 };
+interface Props {
+  handleFormSubmit: (formData: FormData) => void;
+  alreadyExists?: boolean;
+  created?: boolean;
+}
 
-export default function RegistrationForm() {
+export default function RegistrationForm(props: Props) {
   const actionData = useActionData<ActionData>();
+  const [alreadyExists, setAlreadyExists] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
+  const [created, setCreated] = useState(false);
 
   const [formValues, setFormValues] = useState({
     nin: "",
@@ -41,9 +57,7 @@ export default function RegistrationForm() {
     mobile: "",
   });
 
-  const handleSubmit = () => {
-    console.log("Hello World");
-
+  const handleSubmit = async () => {
     const newErrors: Errors = {};
 
     if (formValues.nin.length < 11) {
@@ -65,8 +79,34 @@ export default function RegistrationForm() {
     } else if (formValues.mobile.length < 8)
       newErrors.mobile = "Mobilnummer må være minst 8 siffer langt.";
     else {
-      console.log(formValues);
-      // This is where the api post will go
+      const formData = new FormData();
+      formData.append("nin", formValues.nin);
+      formData.append("firstName", formValues.firstName);
+      formData.append("lastName", formValues.lastName);
+      formData.append("mail", formValues.mail);
+      formData.append("mobile", formValues.mobile);
+
+      props.handleFormSubmit(formData);
+      // console.log(JSON.stringify(formValues));
+      //
+      // const newContact: IContact = {
+      //   nin: formValues.nin,
+      //   firstName: formValues.firstName,
+      //   lastName: formValues.lastName,
+      //   mail: formValues.mail,
+      //   mobile: formValues.mobile,
+      // };
+      //
+      // const contactExists = await ContactApi.checkIfExistingContact(newContact);
+      // contactExists
+      //   ? ContactApi.createContact(newContact).then((response) => {
+      //       console.log(response);
+      //       if (response.status === 200) {
+      //         setCreated(true);
+      //
+      //       }
+      //     })
+      //   : setAlreadyExists(true);
     }
     setErrors(newErrors);
   };
@@ -78,67 +118,99 @@ export default function RegistrationForm() {
 
   return (
     <Page.Block gutters width="md">
-      <VStack gap="4" marginInline="20">
-        <TextField
-          type="number"
-          name="nin"
-          label="Fødselsnummer"
-          value={formValues.nin}
-          onChange={handleChange}
-          error={errors.nin}
-        />
-        {actionData?.fieldErrors?.nin && <p>{actionData.fieldErrors.nin}</p>}
+      <VStack gap="4" margin="20">
+        {!created ? (
+          <>
+            <InfoBox />
+            {alreadyExists ? (
+              <Alert variant={"error"} className={"mb-6"}>
+                Det ser ut som du allerede har en bruker.{" "}
+                <Link
+                  to="https://kunde.felleskomponent.no"
+                  className="text-[#7F78E8]"
+                >
+                  Trykk på denne linken for å komme videre til Kundeportalen.
+                </Link>
+              </Alert>
+            ) : (
+              <></>
+            )}
 
-        <TextField
-          type="text"
-          name="firstName"
-          label="Fornavn"
-          value={formValues.firstName}
-          onChange={handleChange}
-          error={errors.firstName}
-        />
-        {actionData?.fieldErrors?.firstName && (
-          <p>{actionData.fieldErrors.firstName}</p>
+            <TextField
+              type="number"
+              name="nin"
+              label="Fødselsnummer"
+              value={formValues.nin}
+              onChange={handleChange}
+              error={errors.nin}
+            />
+            {actionData?.fieldErrors?.nin && (
+              <p>{actionData.fieldErrors.nin}</p>
+            )}
+
+            <TextField
+              type="text"
+              name="firstName"
+              label="Fornavn"
+              value={formValues.firstName}
+              onChange={handleChange}
+              error={errors.firstName}
+            />
+            {actionData?.fieldErrors?.firstName && (
+              <p>{actionData.fieldErrors.firstName}</p>
+            )}
+
+            <TextField
+              type="text"
+              name="lastName"
+              label="Etternavn"
+              value={formValues.lastName}
+              onChange={handleChange}
+              error={errors.lastName}
+            />
+            {actionData?.fieldErrors?.lastName && (
+              <p>{actionData.fieldErrors.lastName}</p>
+            )}
+
+            <TextField
+              type="email"
+              name="mail"
+              label="E-post"
+              value={formValues.mail}
+              onChange={handleChange}
+              error={errors.mail}
+            />
+            {actionData?.fieldErrors?.mail && (
+              <p>{actionData.fieldErrors.mail}</p>
+            )}
+
+            <TextField
+              type="tel"
+              name="mobile"
+              label="Mobil"
+              value={formValues.mobile}
+              onChange={handleChange}
+              error={errors.mobile}
+            />
+            {actionData?.fieldErrors?.mobile && (
+              <p>{actionData.fieldErrors.mobile}</p>
+            )}
+
+            <HStack justify="end">
+              <Button onClick={handleSubmit}>Opprett bruker</Button>
+            </HStack>
+            <PersonvernModal />
+          </>
+        ) : (
+          <>
+            <Alert variant={"success"} className={"mb-8"}>
+              Du er nå registrert i systemet vårt.{" "}
+            </Alert>
+            <Button as={"a"} href="https://kunde.felleskomponent.no">
+              Trykk her for å gå til Kundeportalen.
+            </Button>
+          </>
         )}
-
-        <TextField
-          type="text"
-          name="lastName"
-          label="Etternavn"
-          value={formValues.lastName}
-          onChange={handleChange}
-          error={errors.lastName}
-        />
-        {actionData?.fieldErrors?.lastName && (
-          <p>{actionData.fieldErrors.lastName}</p>
-        )}
-
-        <TextField
-          type="email"
-          name="mail"
-          label="E-post"
-          value={formValues.mail}
-          onChange={handleChange}
-          error={errors.mail}
-        />
-        {actionData?.fieldErrors?.mail && <p>{actionData.fieldErrors.mail}</p>}
-
-        <TextField
-          type="tel"
-          name="mobile"
-          label="Mobil"
-          value={formValues.mobile}
-          onChange={handleChange}
-          error={errors.mobile}
-        />
-        {actionData?.fieldErrors?.mobile && (
-          <p>{actionData.fieldErrors.mobile}</p>
-        )}
-
-        <HStack justify="end">
-          <Button onClick={handleSubmit}>Opprett bruker</Button>
-        </HStack>
-        <PersonvernModal />
       </VStack>
     </Page.Block>
   );
