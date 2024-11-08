@@ -2,9 +2,8 @@ import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
 import { Box, Page } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
-import "~/components/RegistrationForm";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, useActionData, useFetcher } from "@remix-run/react";
+import { json, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
 
 export const meta: MetaFunction = () => {
@@ -19,8 +18,8 @@ export default function Index() {
 
   const submitForm = (
     formData: FormData,
-    alreadyExists?: boolean,
-    created?: boolean
+    doesExist?: false,
+    isCreated?: false
   ) => {
     console.log("submitForm");
     fetcher.submit(formData, { method: "POST", action: "" });
@@ -46,7 +45,11 @@ export default function Index() {
   );
 }
 
-export async function action({ request }: ActionFunctionArgs) {
+export async function action(
+  { request }: ActionFunctionArgs,
+  doesExist: boolean,
+  isCreated: boolean
+) {
   const formData = await request.formData();
   console.log("ActionFunction", formData);
 
@@ -66,10 +69,11 @@ export async function action({ request }: ActionFunctionArgs) {
         mail: formData.get("mail") as string,
         mobile: formData.get("mobile") as string,
       };
-
       ContactApi.createContact(contact);
+      isCreated = true;
     } else {
       console.log("exists");
+      doesExist = true;
       return json({ message: "Contact already exists" });
     }
   }

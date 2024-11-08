@@ -39,15 +39,15 @@ type Errors = {
 };
 interface Props {
   handleFormSubmit: (formData: FormData) => void;
-  alreadyExists?: boolean;
-  created?: boolean;
+  doesExist?: boolean;
+  isCreated?: boolean;
 }
 
 export default function RegistrationForm(props: Props) {
   const actionData = useActionData<ActionData>();
-  const [alreadyExists, setAlreadyExists] = useState(false);
+  const [alreadyExists, setAlreadyExists] = useState(props.doesExist);
   const [errors, setErrors] = useState<Errors>({});
-  const [created, setCreated] = useState(false);
+  const [created, setCreated] = useState(props.isCreated);
 
   const [formValues, setFormValues] = useState({
     nin: "",
