@@ -45,9 +45,8 @@ interface Props {
 
 export default function RegistrationForm(props: Props) {
   const actionData = useActionData<ActionData>();
-  const [alreadyExists, setAlreadyExists] = useState(props.doesExist);
+
   const [errors, setErrors] = useState<Errors>({});
-  const [created, setCreated] = useState(props.isCreated);
 
   const [formValues, setFormValues] = useState({
     nin: "",
@@ -72,7 +71,7 @@ export default function RegistrationForm(props: Props) {
     if (!formValues.mail) {
       newErrors.mail = "E-post adresse er påkrevd.";
     } else if (!formValues.mail.includes("@")) {
-      newErrors.mail = "E-post adressen må inneholde ein @";
+      newErrors.mail = "E-post adressen må inneholde ein @.";
     }
     if (!formValues.mobile) {
       newErrors.mobile = "telefonnummer er påkrevd.";
@@ -87,26 +86,6 @@ export default function RegistrationForm(props: Props) {
       formData.append("mobile", formValues.mobile);
 
       props.handleFormSubmit(formData);
-      // console.log(JSON.stringify(formValues));
-      //
-      // const newContact: IContact = {
-      //   nin: formValues.nin,
-      //   firstName: formValues.firstName,
-      //   lastName: formValues.lastName,
-      //   mail: formValues.mail,
-      //   mobile: formValues.mobile,
-      // };
-      //
-      // const contactExists = await ContactApi.checkIfExistingContact(newContact);
-      // contactExists
-      //   ? ContactApi.createContact(newContact).then((response) => {
-      //       console.log(response);
-      //       if (response.status === 200) {
-      //         setCreated(true);
-      //
-      //       }
-      //     })
-      //   : setAlreadyExists(true);
     }
     setErrors(newErrors);
   };

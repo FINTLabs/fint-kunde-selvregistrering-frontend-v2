@@ -11,7 +11,7 @@ export interface IContact {
 
 export default class ContactApi {
   static async createContact(contact: IContact) {
-    const check = await this.checkIfExistingContact(contact);
+    const check = await this.checkIfExistingContact(contact.nin);
 
     if (!check) {
       const response = await fetch(`${api}/api/self/register`, {
@@ -27,6 +27,8 @@ export default class ContactApi {
       }
 
       return response.json();
+    } else {
+      throw new Error("Contact already exists");
     }
   }
 
@@ -40,7 +42,7 @@ export default class ContactApi {
         },
       }
     );
-    console.log(nin, response);
+    console.log("Check if existing: ", nin, response);
     return response.ok;
   }
 }

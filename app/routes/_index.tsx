@@ -5,6 +5,7 @@ import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
 import { json, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
+import { useState } from "react";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,11 +17,7 @@ export const meta: MetaFunction = () => {
 export default function Index() {
   const fetcher = useFetcher();
 
-  const submitForm = (
-    formData: FormData,
-    doesExist?: false,
-    isCreated?: false
-  ) => {
+  const submitForm = (formData: FormData) => {
     console.log("submitForm");
     fetcher.submit(formData, { method: "POST", action: "" });
   };
@@ -45,11 +42,7 @@ export default function Index() {
   );
 }
 
-export async function action(
-  { request }: ActionFunctionArgs,
-  doesExist: boolean,
-  isCreated: boolean
-) {
+export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
   console.log("ActionFunction", formData);
 
@@ -59,22 +52,13 @@ export async function action(
     console.log("Nin not found", nin);
     return json({ message: "NIN not found", showError: true });
   } else {
-    const exists = await ContactApi.checkIfExistingContact(nin);
-
-    if (!exists) {
-      const contact: IContact = {
-        nin: nin,
-        firstName: formData.get("firstName") as string,
-        lastName: formData.get("lastName") as string,
-        mail: formData.get("mail") as string,
-        mobile: formData.get("mobile") as string,
-      };
-      ContactApi.createContact(contact);
-      isCreated = true;
-    } else {
-      console.log("exists");
-      doesExist = true;
-      return json({ message: "Contact already exists" });
-    }
+    const contact: IContact = {
+      nin: nin,
+      firstName: formData.get("firstName") as string,
+      lastName: formData.get("lastName") as string,
+      mail: formData.get("mail") as string,
+      mobile: formData.get("mobile") as string,
+    };
+    ContactApi.createContact(contact);
   }
 }
