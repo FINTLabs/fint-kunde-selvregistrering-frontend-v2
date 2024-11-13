@@ -8,7 +8,6 @@ import {
 import type { LinksFunction } from "@remix-run/node";
 import "@navikt/ds-css/dist/index.css";
 import "./tailwind.css";
-import { GlobalStateProvider } from "./utils/GlobalStateContext";
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -33,7 +32,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <GlobalStateProvider>{children}</GlobalStateProvider>
+        {children}
+
         <ScrollRestoration />
         <Scripts />
       </body>

@@ -1,11 +1,13 @@
 import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Box, Page } from "@navikt/ds-react";
+import { Alert, Box, Button, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, useFetcher } from "@remix-run/react";
+import { json, Link, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
-import { useState } from "react";
+import React, { useState } from "react";
+import AlreadyExistAlert from "~/components/AlreadyExistAlert";
+import SuccessAlert from "~/components/SuccessAlert";
 
 export const meta: MetaFunction = () => {
   return [
@@ -16,6 +18,8 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const fetcher = useFetcher();
+  const [alreadyExists, setAlreadyExists] = useState(false);
+  const [created, setCreated] = useState(false);
 
   const submitForm = (formData: FormData) => {
     console.log("submitForm");
@@ -36,7 +40,16 @@ export default function Index() {
         </Page.Block>
       </Box>
       <Box as="main">
-        <RegistrationForm handleFormSubmit={submitForm} />
+        <Page.Block gutters width="md">
+          <VStack justify="center" align={"center"} marginBlock={"12"}>
+            {alreadyExists ? <AlreadyExistAlert /> : <></>}
+            {!created ? (
+              <RegistrationForm handleFormSubmit={submitForm} />
+            ) : (
+              <SuccessAlert />
+            )}
+          </VStack>
+        </Page.Block>
       </Box>
     </Page>
   );
@@ -59,6 +72,6 @@ export async function action({ request }: ActionFunctionArgs) {
       mail: formData.get("mail") as string,
       mobile: formData.get("mobile") as string,
     };
-    ContactApi.createContact(contact);
+    await ContactApi.createContact(contact);
   }
 }

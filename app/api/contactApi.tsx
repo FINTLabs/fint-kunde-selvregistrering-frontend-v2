@@ -1,4 +1,5 @@
 // const api = process.env.APIURL;
+
 const api = "http://localhost:8080";
 
 export interface IContact {
@@ -10,7 +11,11 @@ export interface IContact {
 }
 
 export default class ContactApi {
-  static async createContact(contact: IContact) {
+  static async createContact(
+    contact: IContact,
+    onAlreadyExists?: () => void,
+    onCreated?: () => void
+  ) {
     const check = await this.checkIfExistingContact(contact.nin);
 
     if (!check) {
@@ -26,8 +31,10 @@ export default class ContactApi {
         throw new Error("Failed to create contact");
       }
 
+      if (onCreated) onCreated();
       return response.json();
     } else {
+      if (onAlreadyExists) onAlreadyExists();
       throw new Error("Contact already exists");
     }
   }

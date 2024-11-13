@@ -1,5 +1,5 @@
 import { Link, useActionData } from "@remix-run/react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   HStack,
@@ -45,6 +45,7 @@ interface Props {
 
 export default function RegistrationForm(props: Props) {
   const actionData = useActionData<ActionData>();
+  const [isListenerActive, setIsListenerActive] = useState(true);
 
   const [errors, setErrors] = useState<Errors>({});
 
@@ -90,107 +91,100 @@ export default function RegistrationForm(props: Props) {
     setErrors(newErrors);
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent) => {
+    if (isListenerActive && event.key === "Enter") {
+      event.preventDefault();
+      handleSubmit();
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener(
+      "keydown",
+      handleKeyDown as unknown as EventListener
+    );
+    return () =>
+      window.removeEventListener(
+        "keydown",
+        handleKeyDown as unknown as EventListener
+      );
+  }, [isListenerActive, formValues]);
+
+  const disableListener = () => setIsListenerActive(false);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
   };
 
   return (
-    <Page.Block gutters width="md">
-      <VStack gap="4" margin="20">
-        {!created ? (
-          <>
-            <InfoBox />
-            {alreadyExists ? (
-              <Alert variant={"error"} className={"mb-6"}>
-                Det ser ut som du allerede har en bruker.{" "}
-                <Link
-                  to="https://kunde.felleskomponent.no"
-                  className="text-[#7F78E8]"
-                >
-                  Trykk på denne linken for å komme videre til Kundeportalen.
-                </Link>
-              </Alert>
-            ) : (
-              <></>
-            )}
+    <VStack gap="4" marginInline={"20"}>
+      <InfoBox />
+      <TextField
+        type="number"
+        name="nin"
+        label="Fødselsnummer"
+        value={formValues.nin}
+        onChange={handleChange}
+        error={errors.nin}
+        defaultValue={"12345612345"}
+      />
+      {actionData?.fieldErrors?.nin && <p>{actionData.fieldErrors.nin}</p>}
 
-            <TextField
-              type="number"
-              name="nin"
-              label="Fødselsnummer"
-              value={formValues.nin}
-              onChange={handleChange}
-              error={errors.nin}
-            />
-            {actionData?.fieldErrors?.nin && (
-              <p>{actionData.fieldErrors.nin}</p>
-            )}
+      <TextField
+        type="text"
+        name="firstName"
+        label="Fornavn"
+        value={formValues.firstName}
+        onChange={handleChange}
+        error={errors.firstName}
+        defaultValue={"TestUser"}
+      />
+      {actionData?.fieldErrors?.firstName && (
+        <p>{actionData.fieldErrors.firstName}</p>
+      )}
 
-            <TextField
-              type="text"
-              name="firstName"
-              label="Fornavn"
-              value={formValues.firstName}
-              onChange={handleChange}
-              error={errors.firstName}
-            />
-            {actionData?.fieldErrors?.firstName && (
-              <p>{actionData.fieldErrors.firstName}</p>
-            )}
+      <TextField
+        type="text"
+        name="lastName"
+        label="Etternavn"
+        value={formValues.lastName}
+        onChange={handleChange}
+        error={errors.lastName}
+        defaultValue={"TestUser"}
+      />
+      {actionData?.fieldErrors?.lastName && (
+        <p>{actionData.fieldErrors.lastName}</p>
+      )}
 
-            <TextField
-              type="text"
-              name="lastName"
-              label="Etternavn"
-              value={formValues.lastName}
-              onChange={handleChange}
-              error={errors.lastName}
-            />
-            {actionData?.fieldErrors?.lastName && (
-              <p>{actionData.fieldErrors.lastName}</p>
-            )}
+      <TextField
+        type="email"
+        name="mail"
+        label="E-post"
+        value={formValues.mail}
+        onChange={handleChange}
+        error={errors.mail}
+        defaultValue={"TestUser@test.test"}
+      />
+      {actionData?.fieldErrors?.mail && <p>{actionData.fieldErrors.mail}</p>}
 
-            <TextField
-              type="email"
-              name="mail"
-              label="E-post"
-              value={formValues.mail}
-              onChange={handleChange}
-              error={errors.mail}
-            />
-            {actionData?.fieldErrors?.mail && (
-              <p>{actionData.fieldErrors.mail}</p>
-            )}
+      <TextField
+        type="tel"
+        name="mobile"
+        label="Mobil"
+        value={formValues.mobile}
+        onChange={handleChange}
+        error={errors.mobile}
+        defaultValue={"12345678"}
+      />
+      {actionData?.fieldErrors?.mobile && (
+        <p>{actionData.fieldErrors.mobile}</p>
+      )}
 
-            <TextField
-              type="tel"
-              name="mobile"
-              label="Mobil"
-              value={formValues.mobile}
-              onChange={handleChange}
-              error={errors.mobile}
-            />
-            {actionData?.fieldErrors?.mobile && (
-              <p>{actionData.fieldErrors.mobile}</p>
-            )}
-
-            <HStack justify="end">
-              <Button onClick={handleSubmit}>Opprett bruker</Button>
-            </HStack>
-            <PersonvernModal />
-          </>
-        ) : (
-          <>
-            <Alert variant={"success"} className={"mb-8"}>
-              Du er nå registrert i systemet vårt.{" "}
-            </Alert>
-            <Button as={"a"} href="https://kunde.felleskomponent.no">
-              Trykk her for å gå til Kundeportalen.
-            </Button>
-          </>
-        )}
-      </VStack>
-    </Page.Block>
+      <HStack justify="end">
+        <Button onClick={handleSubmit}>Opprett bruker</Button>
+      </HStack>
+      <PersonvernModal />
+    </VStack>
   );
 }
