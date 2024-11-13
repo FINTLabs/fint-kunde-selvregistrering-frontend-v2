@@ -1,11 +1,11 @@
 import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Alert, Box, Button, Page, VStack } from "@navikt/ds-react";
+import { Box, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, Link, useFetcher } from "@remix-run/react";
+import { json, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import AlreadyExistAlert from "~/components/AlreadyExistAlert";
 import SuccessAlert from "~/components/SuccessAlert";
 
@@ -20,6 +20,20 @@ export default function Index() {
   const fetcher = useFetcher();
   const [alreadyExists, setAlreadyExists] = useState(false);
   const [created, setCreated] = useState(false);
+
+  useEffect(() => {
+    if (fetcher.data) {
+      if (fetcher.data.alreadyExists) {
+        setAlreadyExists(true);
+        setCreated(false);
+        console.log("useEffect, alreadyExists");
+      } else if (fetcher.data.created) {
+        setCreated(true);
+        setAlreadyExists(false);
+        console.log("useEffect, created");
+      }
+    }
+  }, [fetcher.data]);
 
   const submitForm = (formData: FormData) => {
     console.log("submitForm");
@@ -57,21 +71,28 @@ export default function Index() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  console.log("ActionFunction", formData);
-
   const nin = formData.get("nin") as string;
 
-  if (nin === null || nin === undefined || nin === "") {
-    console.log("Nin not found", nin);
+  if (!nin) {
+    console.log("NIN not found", nin);
     return json({ message: "NIN not found", showError: true });
   } else {
     const contact: IContact = {
-      nin: nin,
+      nin,
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       mail: formData.get("mail") as string,
       mobile: formData.get("mobile") as string,
     };
-    await ContactApi.createContact(contact);
+
+    try {
+      await ContactApi.createContact(
+        contact,
+        () => json({ alreadyExists: true }), // onAlreadyExists callback
+        () => json({ created: true }) // onCreated callback
+      );
+    } catch (error) {
+      return json({ error: error.message });
+    }
   }
 }

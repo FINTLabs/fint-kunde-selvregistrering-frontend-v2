@@ -13,8 +13,8 @@ export interface IContact {
 export default class ContactApi {
   static async createContact(
     contact: IContact,
-    onAlreadyExists?: () => void,
-    onCreated?: () => void
+    onAlreadyExists?: () => any, // Modify to return directly
+    onCreated?: () => any // Modify to return directly
   ) {
     const check = await this.checkIfExistingContact(contact.nin);
 
@@ -31,10 +31,10 @@ export default class ContactApi {
         throw new Error("Failed to create contact");
       }
 
-      if (onCreated) onCreated();
-      return response.json();
+      if (onCreated) return onCreated();
+      return response.json(); // Default return if no callback
     } else {
-      if (onAlreadyExists) onAlreadyExists();
+      if (onAlreadyExists) return onAlreadyExists();
       throw new Error("Contact already exists");
     }
   }

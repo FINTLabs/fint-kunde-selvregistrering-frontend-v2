@@ -1,13 +1,6 @@
-import { Link, useActionData } from "@remix-run/react";
+import { useActionData } from "@remix-run/react";
 import React, { useEffect, useState } from "react";
-import {
-  Button,
-  HStack,
-  VStack,
-  TextField,
-  Page,
-  Alert,
-} from "@navikt/ds-react";
+import { Button, HStack, VStack, TextField } from "@navikt/ds-react";
 import { PersonvernModal } from "~/components/PersonvernModal";
 import InfoBox from "~/components/InfoBox";
 
