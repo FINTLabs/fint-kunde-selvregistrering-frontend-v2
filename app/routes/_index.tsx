@@ -91,7 +91,9 @@ export async function action({ request }: ActionFunctionArgs) {
         () => json({ alreadyExists: true }), // onAlreadyExists callback
         () => json({ created: true }) // onCreated callback
       );
+      console.log("action Create contract: " + contact);
     } catch (error) {
+      console.log("action createContact error: " + error);
       return json({ error: error.message });
     }
   }

@@ -40,16 +40,29 @@ export default class ContactApi {
   }
 
   static async checkIfExistingContact(nin: string) {
-    const response = await fetch(
-      `${api}/api/self/register?nin=${encodeURIComponent(nin)}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
+    try {
+      const response = await fetch(
+        `${api}/api/self/register?nin=${encodeURIComponent(nin)}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      // Log response status and details
+      console.log("Check if existing: ", nin, response);
+
+      if (!response.ok) {
+        const errorDetails = await response.json(); // Try to parse error details from response
+        console.log("Error details:", errorDetails);
       }
-    );
-    console.log("Check if existing: ", nin, response);
-    return response.ok;
+
+      return response.ok;
+    } catch (error) {
+      console.error("Network or other error:", error);
+      return false;
+    }
   }
 }
