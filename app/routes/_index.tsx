@@ -1,9 +1,14 @@
 import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Box, Page, VStack } from "@navikt/ds-react";
+import { Alert, Box, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, useFetcher } from "@remix-run/react";
+import {
+  json,
+  useActionData,
+  useFetcher,
+  useRouteError,
+} from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
 import React, { useEffect, useState } from "react";
 import AlreadyExistAlert from "~/components/AlreadyExistAlert";
@@ -18,25 +23,10 @@ export const meta: MetaFunction = () => {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const [alreadyExists, setAlreadyExists] = useState(false);
-  const [created, setCreated] = useState(false);
-
-  useEffect(() => {
-    if (fetcher.data) {
-      if (fetcher.data.alreadyExists) {
-        setAlreadyExists(true);
-        setCreated(false);
-        console.log("useEffect, alreadyExists");
-      } else if (fetcher.data.created) {
-        setCreated(true);
-        setAlreadyExists(false);
-        console.log("useEffect, created");
-      }
-    }
-  }, [fetcher.data]);
+  const actionData = fetcher.data;
 
   const submitForm = (formData: FormData) => {
-    console.log("submitForm");
+    console.log("index submitForm" + JSON.stringify(formData));
     fetcher.submit(formData, { method: "POST", action: "" });
   };
 
@@ -56,11 +46,24 @@ export default function Index() {
       <Box as="main">
         <Page.Block gutters width="md">
           <VStack justify="center" align={"center"} marginBlock={"12"}>
-            {alreadyExists ? <AlreadyExistAlert /> : <></>}
-            {!created ? (
-              <RegistrationForm handleFormSubmit={submitForm} />
-            ) : (
+            {actionData && actionData.errorMessage ? (
+              <Alert variant={"error"} className={"mb-8"}>
+                {actionData.errorMessage}
+              </Alert>
+            ) : null}
+
+            {actionData && actionData.created ? (
               <SuccessAlert />
+            ) : (
+              <>
+                {actionData && actionData.alreadyExists ? (
+                  <AlreadyExistAlert />
+                ) : (
+                  <></>
+                )}
+
+                <RegistrationForm handleFormSubmit={submitForm} />
+              </>
             )}
           </VStack>
         </Page.Block>
@@ -71,30 +74,23 @@ export default function Index() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const nin = formData.get("nin") as string;
+  const formNin = formData.get("nin") as string;
+  const userXnin = request.headers.get("x-nin");
 
-  if (!nin) {
-    console.log("NIN not found", nin);
+  if (!formNin) {
+    console.log("NIN not found", formNin);
     return json({ message: "NIN not found", showError: true });
   } else {
     const contact: IContact = {
-      nin,
+      nin: formNin,
       firstName: formData.get("firstName") as string,
       lastName: formData.get("lastName") as string,
       mail: formData.get("mail") as string,
       mobile: formData.get("mobile") as string,
     };
 
-    try {
-      await ContactApi.createContact(
-        contact,
-        () => json({ alreadyExists: true }), // onAlreadyExists callback
-        () => json({ created: true }) // onCreated callback
-      );
-      console.log("action Create contract: " + contact);
-    } catch (error) {
-      console.log("action createContact error: " + error);
-      return json({ error: error.message });
-    }
+    const returnValue = await ContactApi.createContact(contact, userXnin);
+    console.log("action Create contract: " + contact);
+    return returnValue;
   }
 }

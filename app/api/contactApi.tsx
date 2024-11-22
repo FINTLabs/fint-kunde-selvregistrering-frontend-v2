@@ -1,5 +1,7 @@
 // const api = process.env.APIURL;
 
+import { json } from "@remix-run/react";
+
 const api = "http://localhost:8080";
 
 export interface IContact {
@@ -10,56 +12,64 @@ export interface IContact {
   mobile: string;
 }
 
+type ContactApiResponse = {
+  errorMessage?: string;
+  alreadyExists?: boolean;
+  created?: boolean;
+};
+
 export default class ContactApi {
   static async createContact(
     contact: IContact,
-    onAlreadyExists?: () => any, // Modify to return directly
-    onCreated?: () => any // Modify to return directly
-  ) {
-    const check = await this.checkIfExistingContact(contact.nin);
+    userXnin: string
+  ): Promise<ContactApiResponse> {
+    const checkExistance = await this.checkIfExistingContact(
+      contact.nin,
+      userXnin
+    );
 
-    if (!check) {
+    if (!checkExistance) {
       const response = await fetch(`${api}/api/self/register`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "x-nin": `${userXnin}`,
         },
         body: JSON.stringify(contact),
       });
 
       if (!response.ok) {
-        throw new Error("Failed to create contact");
+        return { errorMessage: "something went wrong" };
       }
 
-      if (onCreated) return onCreated();
-      return response.json(); // Default return if no callback
+      return { created: true };
     } else {
-      if (onAlreadyExists) return onAlreadyExists();
-      throw new Error("Contact already exists");
+      return { alreadyExists: true };
     }
   }
 
-  static async checkIfExistingContact(nin: string) {
+  static async checkIfExistingContact(formNin: string, userXnin: string) {
     try {
       const response = await fetch(
-        `${api}/api/self/register?nin=${encodeURIComponent(nin)}`,
+        `${api}/api/self/register?nin=${encodeURIComponent(formNin)}`,
         {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
+            "x-nin": `${userXnin}`,
           },
         }
       );
 
-      // Log response status and details
-      console.log("Check if existing: ", nin, response);
-
+      console.log(response);
       if (!response.ok) {
-        const errorDetails = await response.json(); // Try to parse error details from response
-        console.log("Error details:", errorDetails);
+        const errorDetails = await response.json();
+
+        console.log("checkIfExistingContact, Error details:", errorDetails);
+        return false;
       }
 
-      return response.ok;
+      return true;
     } catch (error) {
       console.error("Network or other error:", error);
       return false;
