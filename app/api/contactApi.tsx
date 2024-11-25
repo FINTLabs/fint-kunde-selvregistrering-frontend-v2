@@ -75,4 +75,19 @@ export default class ContactApi {
       return false;
     }
   }
+
+  static async deleteContact(userXnin:string) {
+    try {
+      const response = await fetch(
+          `${api}/api/self/register`,
+          {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+              "x-nin": `${userXnin}`,
+            },
+          }
+      );
+    }
+  }
 }

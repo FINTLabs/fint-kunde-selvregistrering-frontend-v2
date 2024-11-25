@@ -62,7 +62,11 @@ export default function Index() {
                   <></>
                 )}
 
-                <RegistrationForm handleFormSubmit={submitForm} />
+                <RegistrationForm
+                  handleFormSubmit={
+                    (submitForm, actionData && actionData.userXnin)
+                  }
+                />
               </>
             )}
           </VStack>

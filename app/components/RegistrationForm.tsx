@@ -48,11 +48,12 @@ export default function RegistrationForm(props: Props) {
     mail: "",
     mobile: "",
   });
+  const userXnin = request.headers.get("x-nin");
 
   const handleSubmit = async () => {
     const newErrors: Errors = {};
 
-    if (formValues.nin.length < 11) {
+    if (formValues.nin.trim().length < 11) {
       newErrors.nin = "Fult fødselsnummer er påkrevd.";
     }
     if (formValues.firstName.trim().length === 0) {
