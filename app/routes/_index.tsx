@@ -1,16 +1,11 @@
 import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
-import { Alert, Box, Page, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, HStack, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import {
-  json,
-  useActionData,
-  useFetcher,
-  useRouteError,
-} from "@remix-run/react";
+import { json, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import AlreadyExistAlert from "~/components/AlreadyExistAlert";
 import SuccessAlert from "~/components/SuccessAlert";
 
@@ -62,13 +57,19 @@ export default function Index() {
                   <></>
                 )}
 
-                <RegistrationForm
-                  handleFormSubmit={
-                    (submitForm, actionData && actionData.userXnin)
-                  }
-                />
+                <RegistrationForm handleFormSubmit={submitForm} />
               </>
             )}
+            <VStack padding={"8"} justify={"end"} align={"end"}>
+              <Button
+                onClick={ContactApi.deleteContact("")}
+                as={"button"}
+                variant={"danger"}
+                size={"small"}
+              >
+                Slett bruker
+              </Button>
+            </VStack>
           </VStack>
         </Page.Block>
       </Box>

@@ -48,7 +48,6 @@ export default function RegistrationForm(props: Props) {
     mail: "",
     mobile: "",
   });
-  const userXnin = request.headers.get("x-nin");
 
   const handleSubmit = async () => {
     const newErrors: Errors = {};

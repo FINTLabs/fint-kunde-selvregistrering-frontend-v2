@@ -1,6 +1,7 @@
 // const api = process.env.APIURL;
 
 import { json } from "@remix-run/react";
+import errorMessage from "@navikt/ds-react/src/typography/ErrorMessage";
 
 const api = "http://localhost:8080";
 
@@ -76,18 +77,24 @@ export default class ContactApi {
     }
   }
 
-  static async deleteContact(userXnin:string) {
+  static async deleteContact(userXnin: string): Promise<ContactApiResponse> {
     try {
-      const response = await fetch(
-          `${api}/api/self/register`,
-          {
-            method: "DELETE",
-            headers: {
-              "Content-Type": "application/json",
-              "x-nin": `${userXnin}`,
-            },
-          }
-      );
+      const response = await fetch(`${api}/api/self/register`, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          "x-nin": userXnin,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete contact. Status: ${response.status}`);
+      }
+
+      return { errorMessage: "Brukeren din er nå slettet. " };
+    } catch (error) {
+      console.error("Network or other error:", error);
+      throw error; // Optional: re-throw if the caller needs to handle it.
     }
   }
 }
