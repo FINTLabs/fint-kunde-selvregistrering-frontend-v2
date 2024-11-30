@@ -3,18 +3,18 @@ import React, { useEffect, useState } from "react";
 import { Button, HStack, VStack, TextField } from "@navikt/ds-react";
 import { PersonvernModal } from "~/components/PersonvernModal";
 import InfoBox from "~/components/InfoBox";
+import { LoaderFunction } from "@remix-run/node";
+import { useLoaderData } from "react-router";
 
 type ActionData = {
   formError?: string;
   fieldErrors?: {
-    nin?: string;
     firstName?: string;
     lastName?: string;
     mail?: string;
     mobile?: string;
   };
   fields?: {
-    nin: string;
     firstName: string;
     lastName: string;
     mail: string;
@@ -23,7 +23,6 @@ type ActionData = {
 };
 
 type Errors = {
-  nin?: string;
   firstName?: string;
   lastName?: string;
   mail?: string;
@@ -40,9 +39,9 @@ interface Props {
 export default function RegistrationForm(props: Props) {
   const actionData = useActionData<ActionData>();
   const [isListenerActive, setIsListenerActive] = useState(true);
+  const { userXnin } = useLoaderData();
   const [errors, setErrors] = useState<Errors>({});
   const [formValues, setFormValues] = useState({
-    nin: "",
     firstName: "",
     lastName: "",
     mail: "",
@@ -52,9 +51,6 @@ export default function RegistrationForm(props: Props) {
   const handleSubmit = async () => {
     const newErrors: Errors = {};
 
-    if (formValues.nin.trim().length < 11) {
-      newErrors.nin = "Fult fødselsnummer er påkrevd.";
-    }
     if (formValues.firstName.trim().length === 0) {
       newErrors.firstName = "Fornavn er påkrevd.";
     }
@@ -74,7 +70,6 @@ export default function RegistrationForm(props: Props) {
 
     if (Object.keys(newErrors).length === 0) {
       const formData = new FormData();
-      formData.append("nin", formValues.nin);
       formData.append("firstName", formValues.firstName);
       formData.append("lastName", formValues.lastName);
       formData.append("mail", formValues.mail);
@@ -103,8 +98,6 @@ export default function RegistrationForm(props: Props) {
     return () => window.removeEventListener("keydown", listener);
   }, [isListenerActive]);
 
-  const disableListener = () => setIsListenerActive(false);
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormValues((prevValues) => ({
@@ -116,14 +109,7 @@ export default function RegistrationForm(props: Props) {
   return (
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
-      <TextField
-        type="number"
-        name="nin"
-        label="Fødselsnummer"
-        value={formValues.nin}
-        onChange={handleChange}
-        error={errors.nin}
-      />
+      <TextField type="number" disabled name="nin" label="Fødselsnummer" />
       {actionData?.fieldErrors?.nin && <p>{actionData.fieldErrors.nin}</p>}
 
       <TextField

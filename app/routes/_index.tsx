@@ -1,4 +1,8 @@
-import { ActionFunctionArgs, MetaFunction } from "@remix-run/node";
+import {
+  ActionFunctionArgs,
+  LoaderFunction,
+  MetaFunction,
+} from "@remix-run/node";
 import { Alert, Box, Button, HStack, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
@@ -14,6 +18,16 @@ export const meta: MetaFunction = () => {
     { title: "Kunde Selvregistrering V2" },
     { name: "fint-kunde-selvregistrering-frontend-v2", content: "" },
   ];
+};
+
+export const loader: LoaderFunction = async ({ request }) => {
+  const userXnin = request.headers.get("x-nin");
+
+  if (!userXnin) {
+    throw new Response("Missing 'x-nin' header", { status: 400 });
+  }
+
+  return json({ userXnin });
 };
 
 export default function Index() {

@@ -1,7 +1,7 @@
 // const api = process.env.APIURL;
 
+import { LoaderFunction } from "@remix-run/node";
 import { json } from "@remix-run/react";
-import errorMessage from "@navikt/ds-react/src/typography/ErrorMessage";
 
 const api = "http://localhost:8080";
 

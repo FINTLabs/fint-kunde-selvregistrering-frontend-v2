@@ -13,8 +13,8 @@
   "dependencies": {
     "@navikt/ds-css": "^7.4.0",
     "@navikt/ds-react": "^7.4.0",
-    "@remix-run/node": "^2.13.1",
-    "@remix-run/react": "^2.13.1",
+    "@remix-run/node": "^2.15.0",
+    "@remix-run/react": "^2.15.0",
     "@remix-run/serve": "^2.13.1",
     "fint-kunde-selvregistrering-frontend-v2": "file:",
     "isbot": "^4.1.0",
