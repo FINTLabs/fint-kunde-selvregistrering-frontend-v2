@@ -110,7 +110,7 @@ export default function RegistrationForm(props: Props) {
     setNinVisibility(!ninVisibility);
   }
 
-  const ninResult = !ninVisibility ? "****** *****" : userXnin;
+  const ninResult = ninVisibility ? userXnin : "****** *****";
 
   function showNinIcon() {
     return ninVisibility ? EyeSlashIcon : EyeWithPupilIcon;
