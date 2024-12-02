@@ -1,6 +1,7 @@
 import { useActionData } from "@remix-run/react";
 import React, { useEffect, useState } from "react";
-import { Button, HStack, VStack, TextField } from "@navikt/ds-react";
+import { Button, HStack, VStack, TextField, Label } from "@navikt/ds-react";
+import { EyeSlashIcon, EyeWithPupilIcon } from "@navikt/aksel-icons";
 import { PersonvernModal } from "~/components/PersonvernModal";
 import InfoBox from "~/components/InfoBox";
 import { LoaderFunction } from "@remix-run/node";
@@ -32,15 +33,14 @@ type Errors = {
 
 interface Props {
   handleFormSubmit: (formData: FormData) => void;
-  doesExist?: boolean;
-  isCreated?: boolean;
 }
 
 export default function RegistrationForm(props: Props) {
-  const actionData = useActionData<ActionData>();
   const [isListenerActive, setIsListenerActive] = useState(true);
-  const { userXnin } = useLoaderData();
+  const [ninVisibility, setNinVisibility] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
+  const actionData = useActionData<ActionData>();
+  const { userXnin } = useLoaderData();
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
@@ -106,12 +106,23 @@ export default function RegistrationForm(props: Props) {
     }));
   };
 
+  function ninButtonAction() {
+    setNinVisibility(!ninVisibility);
+  }
+
+  const ninResult = !ninVisibility ? "****** *****" : userXnin;
+
+  function showNinIcon() {
+    return ninVisibility ? EyeSlashIcon : EyeWithPupilIcon;
+  }
+
   return (
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
-      <TextField type="number" disabled name="nin" label="Fødselsnummer" />
-      {actionData?.fieldErrors?.nin && <p>{actionData.fieldErrors.nin}</p>}
-
+      <HStack>
+        <Label>Personnummer: {ninResult}</Label>
+        <Button icon={showNinIcon()} size="small" onClick={ninButtonAction} />
+      </HStack>
       <TextField
         type="text"
         name="firstName"
