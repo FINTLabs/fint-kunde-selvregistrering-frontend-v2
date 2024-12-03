@@ -7,7 +7,7 @@ import { Alert, Box, Button, HStack, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, useFetcher } from "@remix-run/react";
+import { json, useFetcher, useLoaderData } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
 import React from "react";
 import AlreadyExistAlert from "~/components/AlreadyExistAlert";
@@ -76,7 +76,7 @@ export default function Index() {
             )}
             <VStack padding={"8"} justify={"end"} align={"end"}>
               <Button
-                onClick={ContactApi.deleteContact("")}
+                onClick={ContactApi.deleteContact(useLoaderData())}
                 as={"button"}
                 variant={"danger"}
                 size={"small"}

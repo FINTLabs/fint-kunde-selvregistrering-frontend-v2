@@ -77,7 +77,7 @@ export default class ContactApi {
     }
   }
 
-  static async deleteContact(userXnin: string): Promise<ContactApiResponse> {
+  static async deleteContact(userXnin: string): Promise<Response> {
     try {
       const response = await fetch(`${api}/api/self/register`, {
         method: "DELETE",
@@ -86,15 +86,16 @@ export default class ContactApi {
           "x-nin": userXnin,
         },
       });
+      console.log("Delete Contact response:", response);
 
       if (!response.ok) {
         throw new Error(`Failed to delete contact. Status: ${response.status}`);
       }
 
-      return { errorMessage: "Brukeren din er nå slettet. " };
+      return response;
     } catch (error) {
       console.error("Network or other error:", error);
-      throw error; // Optional: re-throw if the caller needs to handle it.
+      throw error; // Let the caller handle it.
     }
   }
 }

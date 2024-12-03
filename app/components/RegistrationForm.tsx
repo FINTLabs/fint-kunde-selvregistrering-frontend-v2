@@ -37,6 +37,7 @@ interface Props {
 
 export default function RegistrationForm(props: Props) {
   const [isListenerActive, setIsListenerActive] = useState(true);
+  const [ninResult, setNinResult] = useState("****** *****");
   const [ninVisibility, setNinVisibility] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const actionData = useActionData<ActionData>();
@@ -106,22 +107,24 @@ export default function RegistrationForm(props: Props) {
     }));
   };
 
-  function ninButtonAction() {
-    setNinVisibility(!ninVisibility);
+  function toggleNinVisibility() {
+    setNinVisibility((prev) => {
+      const newVisibility = !prev;
+      setNinResult(newVisibility ? userXnin : "****** *****");
+      return newVisibility;
+    });
   }
 
-  const ninResult = ninVisibility ? userXnin : "****** *****";
-
-  function showNinIcon() {
-    return ninVisibility ? EyeSlashIcon : EyeWithPupilIcon;
-  }
+  // function showNinIcon() {
+  //   return ninVisibility ? EyeSlashIcon : EyeWithPupilIcon;
+  // }
 
   return (
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
       <HStack>
-        <Label>Personnummer: {ninResult}</Label>
-        <Button icon={showNinIcon()} size="small" onClick={ninButtonAction} />
+        <Label>Personnummer: {ninVisibility ? userXnin : "****** *****"}</Label>
+        <Button size="small" onClick={toggleNinVisibility} />
       </HStack>
       <TextField
         type="text"
