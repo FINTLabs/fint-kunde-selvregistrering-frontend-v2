@@ -4,8 +4,7 @@ import { Button, HStack, VStack, TextField, Label } from "@navikt/ds-react";
 import { EyeSlashIcon, EyeWithPupilIcon } from "@navikt/aksel-icons";
 import { PersonvernModal } from "~/components/PersonvernModal";
 import InfoBox from "~/components/InfoBox";
-import { LoaderFunction } from "@remix-run/node";
-import { useLoaderData } from "react-router";
+import { useLoaderData } from "@remix-run/react";
 
 type ActionData = {
   formError?: string;
@@ -31,6 +30,8 @@ type Errors = {
   alreadyExists?: boolean;
 };
 
+type LoaderData = { userXnin: string };
+
 interface Props {
   handleFormSubmit: (formData: FormData) => void;
 }
@@ -41,7 +42,7 @@ export default function RegistrationForm(props: Props) {
   const [ninVisibility, setNinVisibility] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const actionData = useActionData<ActionData>();
-  const { userXnin } = useLoaderData();
+  const { userXnin } = useLoaderData<LoaderData>();
   const [formValues, setFormValues] = useState({
     firstName: "",
     lastName: "",
@@ -123,8 +124,12 @@ export default function RegistrationForm(props: Props) {
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
       <HStack>
-        <Label>Personnummer: {ninVisibility ? userXnin : "****** *****"}</Label>
-        <Button size="small" onClick={toggleNinVisibility} />
+        <Label className={"w-60"}>
+          Personnummer: {ninVisibility ? userXnin : "****** *****"}
+        </Label>
+        <a onClick={toggleNinVisibility}>
+          {ninVisibility ? <EyeSlashIcon /> : <EyeWithPupilIcon />}
+        </a>
       </HStack>
       <TextField
         type="text"

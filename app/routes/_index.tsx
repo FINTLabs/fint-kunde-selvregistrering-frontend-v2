@@ -3,7 +3,7 @@ import {
   LoaderFunction,
   MetaFunction,
 } from "@remix-run/node";
-import { Alert, Box, Button, HStack, Page, VStack } from "@navikt/ds-react";
+import { Alert, Box, Button, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
@@ -24,10 +24,12 @@ export const loader: LoaderFunction = async ({ request }) => {
   const userXnin = request.headers.get("x-nin");
 
   if (!userXnin) {
-    throw new Response("Missing 'x-nin' header", { status: 400 });
+    throw new Response(
+      "Manglende personnummer i header. Missing 'x-nin' header",
+      { status: 400 }
+    );
   }
-
-  return json({ userXnin });
+  return { userXnin };
 };
 
 export default function Index() {
@@ -35,9 +37,16 @@ export default function Index() {
   const actionData = fetcher.data;
 
   const submitForm = (formData: FormData) => {
+    formData.append("actionType", "CREATE_NEW");
     console.log("index submitForm" + JSON.stringify(formData));
     fetcher.submit(formData, { method: "POST", action: "" });
   };
+
+  function handleDelete() {
+    const formData = new FormData();
+    formData.append("actionType", "DELETE_CONTACT");
+    fetcher.submit(formData, { method: "DELETE" });
+  }
 
   return (
     <Page
@@ -76,7 +85,7 @@ export default function Index() {
             )}
             <VStack padding={"8"} justify={"end"} align={"end"}>
               <Button
-                onClick={ContactApi.deleteContact(useLoaderData())}
+                onClick={handleDelete}
                 as={"button"}
                 variant={"danger"}
                 size={"small"}
@@ -93,23 +102,43 @@ export default function Index() {
 
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const formNin = formData.get("nin") as string;
-  const userXnin = request.headers.get("x-nin");
+  const userXnin = request.headers.get("x-nin") as string;
+  const actionType = formData.get("actionType") as string;
 
-  if (!formNin) {
-    console.log("NIN not found", formNin);
-    return json({ message: "NIN not found", showError: true });
-  } else {
-    const contact: IContact = {
-      nin: formNin,
-      firstName: formData.get("firstName") as string,
-      lastName: formData.get("lastName") as string,
-      mail: formData.get("mail") as string,
-      mobile: formData.get("mobile") as string,
-    };
+  switch (actionType) {
+    case "CREATE_NEW":
+      if (!userXnin) {
+        console.log("NIN not found", userXnin);
+        return json({ message: "NIN not found", showError: true });
+      } else {
+        const contact: IContact = {
+          nin: userXnin,
+          firstName: formData.get("firstName") as string,
+          lastName: formData.get("lastName") as string,
+          mail: formData.get("mail") as string,
+          mobile: formData.get("mobile") as string,
+        };
+        const returnValue = await ContactApi.createContact(contact, userXnin);
+        console.log("action Create contract: " + contact);
+        return returnValue;
+      }
 
-    const returnValue = await ContactApi.createContact(contact, userXnin);
-    console.log("action Create contract: " + contact);
-    return returnValue;
+    case "DELETE_CONTACT":
+      console.log("Delete blir kjørt fra index");
+
+      const response = await ContactApi.deleteContact(userXnin);
+      console.log(response);
+
+      if (response.ok) {
+        return json({ message: "Delete contact successful", showError: true });
+      } else {
+        return json({ message: "Something went wrong", showError: true });
+      }
+
+    default:
+      return json({
+        message: "Something went wrong. Ukjent action.",
+        showError: true,
+      });
   }
 }
