@@ -22,7 +22,10 @@ export default class ContactApi {
     const checkExistance = await this.checkIfExistingContact(userXnin);
 
     if (!checkExistance) {
-      const response = await fetch(`${api}/api/self/register`, {
+
+      var apiurl = `${api}/api/self/register`;
+      console.log("API URL: " + apiurl);
+      const response = await fetch(apiurl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
