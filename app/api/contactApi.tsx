@@ -1,6 +1,4 @@
-// const api = process.env.APIURL;
-
-const api = "http://localhost:8080";
+const api = process.env.APIURL;
 
 export interface IContact {
   nin: string;
