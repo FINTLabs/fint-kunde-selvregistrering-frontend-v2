@@ -7,7 +7,7 @@ import { Alert, Box, Button, Page, VStack } from "@navikt/ds-react";
 import { PageHeader } from "~/components/PageHeader";
 import { PageFooter } from "~/components/PageFooter";
 import RegistrationForm from "~/components/RegistrationForm";
-import { json, useFetcher, useLoaderData } from "@remix-run/react";
+import { json, useFetcher } from "@remix-run/react";
 import ContactApi, { IContact } from "~/api/contactApi";
 import React from "react";
 import AlreadyExistAlert from "~/components/AlreadyExistAlert";
@@ -32,13 +32,18 @@ export const loader: LoaderFunction = async ({ request }) => {
   return { userXnin };
 };
 
+type ContactApiResponse = {
+  errorMessage?: string;
+  alreadyExists?: boolean;
+  created?: boolean;
+};
+
 export default function Index() {
   const fetcher = useFetcher();
-  const actionData = fetcher.data;
+  const actionData: ContactApiResponse = fetcher.data;
 
   const submitForm = (formData: FormData) => {
     formData.append("actionType", "CREATE_NEW");
-    console.log("index submitForm" + JSON.stringify(formData));
     fetcher.submit(formData, { method: "POST", action: "" });
   };
 
@@ -126,14 +131,10 @@ export async function action({ request }: ActionFunctionArgs) {
     case "DELETE_CONTACT":
       console.log("Delete blir kjørt fra index");
 
-      const response = await ContactApi.deleteContact(userXnin);
-      console.log(response);
+      const returnValue = await ContactApi.deleteContact(userXnin);
+      console.log(returnValue);
 
-      if (response.ok) {
-        return json({ message: "Delete contact successful", showError: true });
-      } else {
-        return json({ message: "Something went wrong", showError: true });
-      }
+      return returnValue;
 
     default:
       return json({

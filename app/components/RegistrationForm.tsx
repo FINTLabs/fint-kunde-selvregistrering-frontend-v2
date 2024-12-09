@@ -116,16 +116,14 @@ export default function RegistrationForm(props: Props) {
     });
   }
 
-  // function showNinIcon() {
-  //   return ninVisibility ? EyeSlashIcon : EyeWithPupilIcon;
-  // }
+  const showNin = userXnin.slice(0, 6) + " " + userXnin.slice(6);
 
   return (
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
       <HStack>
         <Label className={"w-60"}>
-          Personnummer: {ninVisibility ? userXnin : "****** *****"}
+          Personnummer: {ninVisibility ? showNin : "****** *****"}
         </Label>
         <a onClick={toggleNinVisibility}>
           {ninVisibility ? <EyeSlashIcon /> : <EyeWithPupilIcon />}

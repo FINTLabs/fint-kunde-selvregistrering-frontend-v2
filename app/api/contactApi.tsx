@@ -1,8 +1,5 @@
 // const api = process.env.APIURL;
 
-import { LoaderFunction } from "@remix-run/node";
-import { json } from "@remix-run/react";
-
 const api = "http://localhost:8080";
 
 export interface IContact {
@@ -24,10 +21,7 @@ export default class ContactApi {
     contact: IContact,
     userXnin: string
   ): Promise<ContactApiResponse> {
-    const checkExistance = await this.checkIfExistingContact(
-      contact.nin,
-      userXnin
-    );
+    const checkExistance = await this.checkIfExistingContact(userXnin);
 
     if (!checkExistance) {
       const response = await fetch(`${api}/api/self/register`, {
@@ -43,16 +37,16 @@ export default class ContactApi {
         return { errorMessage: "something went wrong" };
       }
 
-      return { created: true };
+      return { created: true, errorMessage: "" };
     } else {
       return { alreadyExists: true };
     }
   }
 
-  static async checkIfExistingContact(formNin: string, userXnin: string) {
+  static async checkIfExistingContact(userXnin: string) {
     try {
       const response = await fetch(
-        `${api}/api/self/register?nin=${encodeURIComponent(formNin)}`,
+        `${api}/api/self/register?nin=${encodeURIComponent(userXnin)}`,
         {
           method: "GET",
           headers: {
@@ -77,7 +71,7 @@ export default class ContactApi {
     }
   }
 
-  static async deleteContact(userXnin: string): Promise<Response> {
+  static async deleteContact(userXnin: string): Promise<ContactApiResponse> {
     try {
       const response = await fetch(`${api}/api/self/register`, {
         method: "DELETE",
@@ -89,10 +83,11 @@ export default class ContactApi {
       console.log("Delete Contact response:", response);
 
       if (!response.ok) {
-        throw new Error(`Failed to delete contact. Status: ${response.status}`);
+        // throw new Error(`Failed to delete contact. Status: ${response.status}`);
+        return { errorMessage: "something went wrong" };
       }
 
-      return response;
+      return { errorMessage: "Brukeren din er slettet.", created: false };
     } catch (error) {
       console.error("Network or other error:", error);
       throw error; // Let the caller handle it.
