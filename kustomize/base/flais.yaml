@@ -14,7 +14,7 @@ metadata:
 spec:
   port: 8000
   orgId: fintlabs.no
-  image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-V2:latest
+  image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-v2:latest
   env:
   - name: APIURL
     value: registrering.felleskomponent.no
