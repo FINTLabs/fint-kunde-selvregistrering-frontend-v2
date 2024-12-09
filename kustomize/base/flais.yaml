@@ -16,7 +16,7 @@ spec:
   orgId: fintlabs.no
   image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-V2:latest
   env:
-    -name: APIURL
+  - name: APIURL
     value: registrering.felleskomponent.no
   ingress:
     enabled: true
