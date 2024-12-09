@@ -32,15 +32,9 @@ export const loader: LoaderFunction = async ({ request }) => {
   return { userXnin };
 };
 
-type ContactApiResponse = {
-  errorMessage?: string;
-  alreadyExists?: boolean;
-  created?: boolean;
-};
-
 export default function Index() {
   const fetcher = useFetcher();
-  const actionData: ContactApiResponse = fetcher.data;
+  const actionData = fetcher.data;
 
   const submitForm = (formData: FormData) => {
     formData.append("actionType", "CREATE_NEW");
