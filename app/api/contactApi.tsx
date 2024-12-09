@@ -1,5 +1,4 @@
-// const api = process.env.API_URL;
-const api = "http://fint-kunde-selvregistrering-backend:8080";
+const api = process.env.API_URL;
 
 export interface IContact {
   nin: string;
