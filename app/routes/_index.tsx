@@ -20,6 +20,13 @@ export const meta: MetaFunction = () => {
   ];
 };
 
+type actionDataType = {
+  errorMessage?: string;
+  alreadyExists?: boolean;
+  created?: boolean;
+  showError?: boolean;
+};
+
 export const loader: LoaderFunction = async ({ request }) => {
   const userXnin = request.headers.get("x-nin");
 
@@ -34,7 +41,7 @@ export const loader: LoaderFunction = async ({ request }) => {
 
 export default function Index() {
   const fetcher = useFetcher();
-  const actionData = fetcher.data;
+  const actionData: actionDataType = fetcher.data;
 
   const submitForm = (formData: FormData) => {
     formData.append("actionType", "CREATE_NEW");
@@ -132,7 +139,7 @@ export async function action({ request }: ActionFunctionArgs) {
 
     default:
       return json({
-        message: "Something went wrong. Ukjent action.",
+        errorMessage: "Something went wrong. Ukjent action.",
         showError: true,
       });
   }
