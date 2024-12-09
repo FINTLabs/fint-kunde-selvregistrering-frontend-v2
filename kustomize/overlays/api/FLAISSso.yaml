@@ -1,0 +1,17 @@
+apiVersion: fintlabs.no/v1alpha1
+kind: FLAISSso
+metadata:
+  name: fint-kunde-selvregistrering-sso
+  labels:
+    app.kubernetes.io/name: fint-kunde-selvregistrering-sso
+    app.kubernetes.io/instance: fint-kunde-selvregistrering-sso
+    app.kubernetes.io/version: latest
+    app.kubernetes.io/component: sso
+    app.kubernetes.io/part-of: fint-core
+    fintlabs.no/team: core
+    fintlabs.no/org-id: fintlabs.no
+spec:
+  basePath: /
+  upnClaim: sub
+  hostname: registrering.felleskomponent.no
+  loggingLevel: debug
