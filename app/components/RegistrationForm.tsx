@@ -38,7 +38,6 @@ interface Props {
 
 export default function RegistrationForm(props: Props) {
   const [isListenerActive, setIsListenerActive] = useState(true);
-  const [ninResult, setNinResult] = useState("****** *****");
   const [ninVisibility, setNinVisibility] = useState(false);
   const [errors, setErrors] = useState<Errors>({});
   const actionData = useActionData<ActionData>();
@@ -109,11 +108,7 @@ export default function RegistrationForm(props: Props) {
   };
 
   function toggleNinVisibility() {
-    setNinVisibility((prev) => {
-      const newVisibility = !prev;
-      setNinResult(newVisibility ? userXnin : "****** *****");
-      return newVisibility;
-    });
+    setNinVisibility((prev) => !prev);
   }
 
   const showNin = userXnin.slice(0, 6) + " " + userXnin.slice(6);
@@ -121,14 +116,22 @@ export default function RegistrationForm(props: Props) {
   return (
     <VStack gap="4" marginInline={"20"}>
       <InfoBox />
-      <HStack>
-        <Label className={"w-60"}>
-          Personnummer: {ninVisibility ? showNin : "****** *****"}
-        </Label>
-        <a onClick={toggleNinVisibility}>
-          {ninVisibility ? <EyeSlashIcon /> : <EyeWithPupilIcon />}
+      <HStack className={"relative top-2"}>
+        <a onClick={toggleNinVisibility} className={"pr-2 cursor-pointer"}>
+          {!ninVisibility ? <EyeSlashIcon /> : <EyeWithPupilIcon />}
         </a>
+        <Label className={"w-60"}>Personnummer:</Label>
       </HStack>
+      <TextField
+        type="text"
+        name="nin"
+        label="Nin"
+        hideLabel={true}
+        value={ninVisibility ? showNin : "****** *****"}
+        readOnly={true}
+        onClick={toggleNinVisibility}
+      />
+
       <TextField
         type="text"
         name="firstName"

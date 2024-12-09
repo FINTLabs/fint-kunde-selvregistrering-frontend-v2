@@ -8,7 +8,10 @@ export function PersonvernModal() {
   return (
     <Box>
       Ved å registrere deg her gir du samtykke til vår{" "}
-      <a className="text-[#7F78E8]" onClick={() => ref.current?.showModal()}>
+      <a
+        className="text-[#7F78E8] cursor-pointer"
+        onClick={() => ref.current?.showModal()}
+      >
         personvernerklæring.
       </a>
       <Modal
