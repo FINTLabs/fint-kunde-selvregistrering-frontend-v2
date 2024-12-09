@@ -1,4 +1,5 @@
-const api = process.env.API_URL;
+// const api = process.env.API_URL;
+const api = "http://fint-kunde-selvregistrering-backend:8080";
 
 export interface IContact {
   nin: string;
@@ -19,6 +20,7 @@ export default class ContactApi {
     contact: IContact,
     userXnin: string
   ): Promise<ContactApiResponse> {
+    console.log("api url directly from env: ", api);
     const checkExistance = await this.checkIfExistingContact(userXnin);
 
     if (!checkExistance) {
