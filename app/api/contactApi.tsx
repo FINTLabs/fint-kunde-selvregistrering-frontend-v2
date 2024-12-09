@@ -1,4 +1,4 @@
-const api = process.env.APIURL;
+const api = process.env.API_URL;
 
 export interface IContact {
   nin: string;
@@ -22,10 +22,9 @@ export default class ContactApi {
     const checkExistance = await this.checkIfExistingContact(userXnin);
 
     if (!checkExistance) {
-
-      var apiurl = `${api}/api/self/register`;
-      console.log("API URL: " + apiurl);
-      const response = await fetch(apiurl, {
+      let apiUrl = `${api}/api/self/register`;
+      console.log("API URL: " + apiUrl);
+      const response = await fetch(apiUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

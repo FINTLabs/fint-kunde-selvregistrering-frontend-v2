@@ -16,7 +16,7 @@ spec:
   orgId: fintlabs.no
   image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-v2:latest
   env:
-  - name: APIURL
+  - name: API_URL
     value: http://fint-kunde-selvregistrering-backend:8080
   url:
     hostname: registrering.felleskomponent.no
