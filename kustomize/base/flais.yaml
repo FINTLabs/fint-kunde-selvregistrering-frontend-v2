@@ -17,7 +17,7 @@ spec:
   image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-v2:latest
   env:
   - name: APIURL
-    value: registrering.felleskomponent.no
+    value: https://registrering.felleskomponent.no
   ingress:
     enabled: true
     middlewares:
