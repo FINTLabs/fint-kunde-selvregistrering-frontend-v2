@@ -17,7 +17,7 @@ spec:
   image: ghcr.io/fintlabs/fint-kunde-selvregistrering-frontend-v2:latest
   env:
   - name: APIURL
-    value: kunde-beta.registrering.felleskomponent.no
+    value: http://fint-kunde-selvregistrering-backend:8080
   ingress:
     enabled: true
     middlewares:
